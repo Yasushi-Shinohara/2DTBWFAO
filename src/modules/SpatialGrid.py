@@ -76,3 +76,31 @@ class SpatialGrid:
             r[n, 0] = -Lx/2.0 + ix*dx
             n += 1
         return r, dx, Lx
+#
+    @classmethod
+    # Generate spatial cordinate in the Honeycomb cell
+    def get_rgrid_Honeycomb(self, N1, N2, Nz, Lz, a=4.6485):
+        """Description for get_rgrid_Honeycomb function
+        Lz is the size of spatial box z axis.
+        `r` is generated in the primitive cell
+        N1, N2, Nz are number of spatial uniform grid along a1, a2, and z zxes
+        """
+        a1 = a*np.array([np.sqrt(3.0)/2.0, -1.0/2.0])
+        a2 = a*np.array([np.sqrt(3.0)/2.0, +1.0/2.0])
+        b1 = (tpi/a)*np.array([1.0/np.sqrt(3.0), -1.0])
+        b2 = (tpi/a)*np.array([1.0/np.sqrt(3.0), +1.0])
+        dz = Lz/Nz #z-grid size
+        S = a1[0]*a2[1] - a1[1]*a2[0]
+        V = S*Lz #Volume
+        dS = S/(N1*N2) #Surface of the discretized box
+        dV = V/(N1*N2*Nz) #Volume of the discretized box
+        r = np.zeros([N1*N2*Nz,3],dtype = "float64")
+        n = 0
+        for i1 in range(N1):
+            for i2 in range(N2):
+                for iz in range(Nz):
+                    r[n, 0] = i1/N1*a1[0] + i2/N2*a2[0]
+                    r[n, 1] = i1/N1*a1[1] + i2/N2*a2[1]
+                    r[n, 2] = -Lz/2.0 + iz*dz
+                    n += 1
+        return r, dV, V, a1, a2, b1, b2
